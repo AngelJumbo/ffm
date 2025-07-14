@@ -1,29 +1,6 @@
 function ffm
     set -l dir (pwd)
     
-    # Preview command
-    set -l preview_cmd "fish -c '
-        set full_path \"$dir/{}\"
-        if test -d \$full_path
-            if command -v exa >/dev/null
-                exa --color=always --icons --group-directories-first \$full_path
-            else
-                ls -1 \$full_path
-            end
-        else
-            if command -v bat >/dev/null
-                set bat_output (bat --color=always --style=plain --line-range=:20 \$full_path 2>&1)
-                if echo \$bat_output | grep -q \"Binary content\"
-                    echo \"Preview not available\"
-                else
-                    echo \$bat_output
-                end
-            else
-                head -20 \$full_path 2>/dev/null || echo \"Preview not available\"
-            end
-        end
-    '"
-    
     while true
         # Get files in current directory with colors
         set -l files_cmd "ls -A --color=always '$dir' | sort"
@@ -37,6 +14,29 @@ function ffm
             # If path is short, just remove leading slash if present
             set prompt_path (echo $dir | sed 's|^/||')
         end
+        
+        # Preview command that uses the current $dir variable
+        set -l preview_cmd "fish -c '
+            set full_path \"$dir/{}\"
+            if test -d \$full_path
+                if command -v exa >/dev/null
+                    exa --color=always --icons --group-directories-first \$full_path
+                else
+                    ls -1 \$full_path
+                end
+            else
+                if command -v bat >/dev/null
+                    set bat_output (bat --color=always --style=plain --line-range=:20 \$full_path 2>&1)
+                    if echo \$bat_output | grep -q \"Binary content\"
+                        echo \"Preview not available\"
+                    else
+                        echo \$bat_output
+                    end
+                else
+                    head -20 \$full_path 2>/dev/null || echo \"Preview not available\"
+                end
+            end
+        '"
         
         # Run fzf with organized preview command
         set -l result (eval $files_cmd | \
@@ -94,3 +94,4 @@ function ffm
         end
     end
 end
+
