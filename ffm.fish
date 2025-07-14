@@ -19,7 +19,26 @@ function ffm
         set -l result (eval $files_cmd | \
             fzf \
                 --ansi \
-                --preview "if test -d '$dir/{}'; then exa --color=always --icons --group-directories-first '$dir/{}' 2>/dev/null || ls -1 '$dir/{}' 2>/dev/null; else bat_output=\$(bat --color=always --style=plain --line-range=:20 '$dir/{}' 2>&1); if echo \"\$bat_output\" | grep -q 'Binary content'; then echo 'Preview not available'; else echo \"\$bat_output\" || head -20 '$dir/{}' 2>/dev/null || echo 'Preview not available'; fi; fi" \
+                --preview "fish -c '
+                    if test -d \"$dir/{}\"
+                        if command -v exa >/dev/null
+                            exa --color=always --icons --group-directories-first \"$dir/{}\"
+                        else
+                            ls -1 \"$dir/{}\"
+                        end
+                    else
+                        if command -v bat >/dev/null
+                            set bat_output (bat --color=always --style=plain --line-range=:20 \"$dir/{}\" 2>&1)
+                            if echo \$bat_output | grep -q \"Binary content\"
+                                echo \"Preview not available\"
+                            else
+                                echo \$bat_output
+                            end
+                        else
+                            head -20 \"$dir/{}\" 2>/dev/null || echo \"Preview not available\"
+                        end
+                    end
+                '" \
                 --preview-window=right:50%:wrap \
                 --height=15 \
                 --layout=reverse \
