@@ -78,7 +78,7 @@ function ffm
                 --bind "right:accept" \
                 --bind "ctrl-c:abort" \
                 --bind "esc:abort" \
-                --footer "$clipboard_status" \
+		#--footer "$clipboard_status" \
                 --pointer='▶' \
                 --marker='●' \
                 --prompt="$prompt_path/")
@@ -108,24 +108,17 @@ function ffm
                         # Check if new name already exists
                         if test -e "$new_path"
                             echo "Error: '$new_name' already exists!"
-                            read -P "Press Enter to continue..."
                         else
                             # Perform the rename
-                            if mv "$old_path" "$new_path"
-                                echo "Renamed '$clean_filename' to '$new_name'"
-                                read -P "Press Enter to continue..."
-                            else
+                            if not mv "$old_path" "$new_path"
                                 echo "Error: Failed to rename '$clean_filename'"
-                                read -P "Press Enter to continue..."
                             end
                         end
                     else
                         echo "Rename cancelled."
-                        read -P "Press Enter to continue..."
                     end
                 else
                     echo "Error: File '$clean_filename' not found!"
-                    read -P "Press Enter to continue..."
                 end
                 continue
             else if string match -q "COPY:*" $command
@@ -141,7 +134,6 @@ function ffm
                     #read -P "Press Enter to continue..."
                 else
                     echo "Error: File '$clean_filename' not found!"
-                    read -P "Press Enter to continue..."
                 end
                 continue
             else if string match -q "CUT:*" $command
@@ -153,11 +145,8 @@ function ffm
                 if test -e "$file_path"
                     set -g __ffm_clipboard_path "$file_path"
                     set -g __ffm_clipboard_operation "cut"
-                    #echo "Cut: $clean_filename"
-                    #read -P "Press Enter to continue..."
                 else
                     echo "Error: File '$clean_filename' not found!"
-                    read -P "Press Enter to continue..."
                 end
                 continue
             else if test "$command" = "PASTE"
@@ -171,7 +160,6 @@ function ffm
                     echo "Error: Source file no longer exists!"
                     set -g __ffm_clipboard_path ""
                     set -g __ffm_clipboard_operation ""
-                    read -P "Press Enter to continue..."
                     continue
                 end
                 
@@ -181,29 +169,23 @@ function ffm
                 # Check if destination already exists
                 if test -e "$dest_path"
                     echo "Error: '$source_name' already exists in this directory!"
-                    read -P "Press Enter to continue..."
                     continue
                 end
                 
                 if test "$__ffm_clipboard_operation" = "copy"
                     # Copy operation
                     if test -d "$__ffm_clipboard_path"
-                        if cp -r "$__ffm_clipboard_path" "$dest_path"
-                            echo "Copied directory: $source_name"
-                        else
+                        if not cp -r "$__ffm_clipboard_path" "$dest_path"
                             echo "Error: Failed to copy directory '$source_name'"
                         end
                     else
-                        if cp "$__ffm_clipboard_path" "$dest_path"
-                            echo "Copied file: $source_name"
-                        else
+                        if not cp "$__ffm_clipboard_path" "$dest_path"
                             echo "Error: Failed to copy file '$source_name'"
                         end
                     end
                 else if test "$__ffm_clipboard_operation" = "cut"
                     # Move operation
                     if mv "$__ffm_clipboard_path" "$dest_path"
-                        echo "Moved: $source_name"
                         # Clear clipboard after successful cut operation
                         set -g __ffm_clipboard_path ""
                         set -g __ffm_clipboard_operation ""
@@ -212,7 +194,6 @@ function ffm
                     end
                 end
                 
-                read -P "Press Enter to continue..."
                 continue
             end
         end
