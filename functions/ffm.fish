@@ -57,7 +57,7 @@ function ffm
                 --bind "right:accept" \
                 --bind "ctrl-c:abort" \
                 --bind "esc:abort" \
-                --footer "Nav with Ctrl+hjkl or arrows" \
+                #--footer "Nav with Ctrl+hjkl or arrows" \
                 --pointer='▶' \
                 --marker='●' \
                 --prompt="$prompt_path/")
