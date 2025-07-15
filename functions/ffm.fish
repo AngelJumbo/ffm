@@ -1,5 +1,7 @@
 function ffm
     set -l dir (pwd)
+    set show_hidden 1
+    set -l files_cmd ""
     
     # Global clipboard variables (shared across function calls)
     if not set -q __ffm_clipboard_path
@@ -8,8 +10,12 @@ function ffm
     end
     
     while true
-        # Get files in current directory with colors
-        set -l files_cmd "ls -A --color=always '$dir' | sort"
+
+    if test $show_hidden -eq 1
+        set files_cmd "ls --group-directories-first -A --color=always '$dir'"
+        else if test $show_hidden -eq 0
+        set files_cmd "ls --group-directories-first --color=always '$dir'"
+    end
         
         # Create temp file for special commands
         set -l temp_file (mktemp)
@@ -72,13 +78,15 @@ function ffm
                 --bind "ctrl-y:execute(echo 'COPY:{}' > $temp_file)+abort" \
                 --bind "ctrl-x:execute(echo 'CUT:{}' > $temp_file)+abort" \
                 --bind "ctrl-p:execute(echo 'PASTE' > $temp_file)+abort" \
+                --bind "ctrl-d:execute(echo 'DELETE:{}' > $temp_file)+abort" \
+        --bind "f2:execute(echo 'TOGGLE_HIDDEN' > $temp_file)+abort"\
+        --bind "alt-.:execute(echo 'TOGGLE_HIDDEN' > $temp_file)+abort"\
                 --bind "down:down" \
                 --bind "up:up" \
                 --bind "left:execute(echo 'PARENT' > $temp_file)+abort" \
                 --bind "right:accept" \
                 --bind "ctrl-c:abort" \
                 --bind "esc:abort" \
-		#--footer "$clipboard_status" \
                 --pointer='▶' \
                 --marker='●' \
                 --prompt="$prompt_path/")
@@ -195,7 +203,35 @@ function ffm
                 end
                 
                 continue
+            else if test "$command" = "TOGGLE_HIDDEN"
+                set show_hidden (math "1 - $show_hidden")
+
+                continue
+                 
+        else if string match -q "DELETE:*" $command
+            set -l filename (string sub -s 8 $command)
+            set -l clean_filename (echo $filename | sed 's/\x1b\[[0-9;]*m//g')
+            set -l full_path "$dir/$clean_filename"
+        
+            if not test -e "$full_path"
+            echo "Error: File '$clean_filename' not found!"
+            continue
             end
+        
+            read -P "Are you sure you want to delete '$clean_filename'? [y/N] " confirm
+            switch $confirm
+            case y Y
+                if rm -rf "$full_path"
+                echo "'$clean_filename' deleted."
+                else
+                echo "Error: Failed to delete '$clean_filename'"
+                end
+            case '*'
+                echo "Deletion cancelled."
+            end
+            continue
+            end
+        
         end
         
         # Clean up temp file
