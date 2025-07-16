@@ -1,4 +1,26 @@
 function ffm
+    set -l required_fzf_version "0.64.0"
+    set -l current_fzf_version (string split " " (fzf --version))[1]
+
+    function __version_gte
+        set -l a (string split . $argv[1])
+        set -l b (string split . $argv[2])
+        for i in (seq (count $a))
+            set -l ai $a[$i]
+            set -l bi (math "0 + $b[$i]")
+            if test (math "$ai") -gt $bi
+                return 0
+            else if test (math "$ai") -lt $bi
+                return 1
+            end
+        end
+        return 0
+    end
+
+    if not __version_gte $current_fzf_version $required_fzf_version
+	echo -e (set_color yellow)"Warning: fzf version $current_fzf_version detected, but >= $required_fzf_version is recommended. The preview feature might not work as expected."(set_color normal)
+    end
+
     set -l dir (pwd)
     set show_hidden 1
     set -l files_cmd ""
