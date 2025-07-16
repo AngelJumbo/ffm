@@ -41,7 +41,6 @@ function ffm
         # Preview command that uses the current $dir variable
         set -l preview_cmd "fish -c '
             set full_path \"$dir/{r}\"
-            echo \$full_path >> $dir/logspreview.txt
             if test -d \"\$full_path\"
                 if command -v exa >/dev/null
                     exa --color=always --icons --group-directories-first \"\$full_path\"

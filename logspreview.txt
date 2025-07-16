@@ -1,0 +1,7 @@
+/home/ardj/projects/ffm/.git
+/home/ardj/projects/ffm/functions
+/home/ardj/projects/ffm/LICENSE
+/home/ardj/projects/ffm/README.md
+/home/ardj/projects/ffm/LICENSE
+/home/ardj/projects/ffm/functions
+/home/ardj/projects/ffm/.git
