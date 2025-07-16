@@ -59,7 +59,12 @@ ffm
 | `ctrl-k` / ↑    | Move up the list                                           |
 | `Enter`         | Open file or directory                                     |
 | `Esc` / `ctrl-c`| Exit the file manager and cd to the current directory      |
-
+| `ctrl-r`        | Rename selected file/directory                             |
+| `ctrl-y`        | Copy selected file/directory                               |
+| `ctrl-x`        | Cut selected file/directory                                |
+| `ctrl-p`        | Paste file/directory                                       |
+| `ctrl-d`        | Delete selected file/directory                             |
+| `F2` / `alt-.`  | Toggle hidden files visibility                             |
 
 ## 🔎 Preview Behavior
 
