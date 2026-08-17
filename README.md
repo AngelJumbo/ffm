@@ -1,6 +1,6 @@
 # ffm — Fish File Manager
 
-`ffm` is a minimalist, interactive file manager built entirely in [Fish shell](https://fishshell.com/). It's based on `fzf`, with Vim-style keybindings and colorful file previews powered by `exa` and `bat`.
+`ffm` is a minimalist, interactive file manager built entirely in [Fish shell](https://fishshell.com/) (there is a [`bash version`](https://github.com/AngelJumbo/bash_ffm)). It's based on `fzf`, with Vim-style keybindings and colorful file previews powered by `exa` and `bat`.
 ![demo](https://pouch.jumpshare.com/preview/9Sj6zxlKqgpp1J3T2c7UndMoNoKC3kZmDQRbJ47c8xaatyodXyM92KtdrUbBaJBHslFdDuEWkorMOw2aGUXQt1AePW8aVeHPVGwtOjn3i6E)
 
 
@@ -66,7 +66,7 @@ ffm
 | `ctrl-d`        | Delete selected file/directory                             |
 | `F2` / `alt-.`  | Toggle hidden files visibility                             |
 
-## 🔎 Preview Behavior
+## Preview Behavior
 
 - **Directories**: previewed with `exa`
 - **Text files**: shows first 20 lines using `bat`, falls back to `head`
