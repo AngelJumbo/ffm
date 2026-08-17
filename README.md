@@ -1,10 +1,10 @@
-# 📁 ffm — Fish File Manager
+# ffm — Fish File Manager
 
 `ffm` is a minimalist, interactive file manager built entirely in [Fish shell](https://fishshell.com/). It's based on `fzf`, with Vim-style keybindings and colorful file previews powered by `exa` and `bat`.
 ![demo](https://pouch.jumpshare.com/preview/9Sj6zxlKqgpp1J3T2c7UndMoNoKC3kZmDQRbJ47c8xaatyodXyM92KtdrUbBaJBHslFdDuEWkorMOw2aGUXQt1AePW8aVeHPVGwtOjn3i6E)
 
 
-## ✨ Features
+## Features
 
 - Navigate with `hjkl` or arrow keys
 - Filtering/Search
@@ -15,7 +15,7 @@
 
 (Operations like copy, cut, paste, rename, etc. Will be added soon) 
 
-## ⚙️ Dependencies
+## Dependencies
 
 Make sure the following are installed:
 
@@ -26,7 +26,7 @@ Make sure the following are installed:
 - [`xdg-utils`](https://freedesktop.org/wiki/Software/xdg-utils/)
 - A [Nerd Font](https://www.nerdfonts.com/) enabled in your terminal
 
-## 🛠 Installation
+## Installation
 
 ### Fisher
 
@@ -37,10 +37,10 @@ fisher install AngelJumbo/ffm
 ### One-liner
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/AngelJumbo/ffm/main/functions/ffm.fish -o ~/.config/fish/functions/ffm.fish && fish -c 'source ~/.config/fish/functions/ffm.fish'
+curl -fsSL https://raw.githubusercontent.com/AngelJumbo/ffm/main/functions/ffm.fish -o ~/.config/fish/functions/ffm.fish && curl -fsSL https://raw.githubusercontent.com/AngelJumbo/ffm/main/functions/__ffm_helper.fish -o ~/.config/fish/functions/__ffm_helper.fish && fish -c 'source ~/.config/fish/functions/ffm.fish; source ~/.config/fish/functions/__ffm_helper.fish'
 ```
 
-## 🚀 Usage
+## Usage
 
 To launch the file manager, run:
 
@@ -49,7 +49,7 @@ ffm
 ```
 
 
-## 📚 Keybindings
+## Keybindings
 
 | Key             | Action                                                     |
 |-----------------|------------------------------------------------------------|
