@@ -2,6 +2,23 @@ function __ffm_helper
     set -l state $FFM_STATE
     set -l action $argv[1]
 
+    function __ffm_read_prompt
+        set -l prompt_text $argv[1]
+        set -l input_value
+
+        if test -t 0
+            read --prompt "$prompt_text" input_value
+        else if test -e /dev/tty
+            printf '%s' "$prompt_text" > /dev/tty
+            read input_value < /dev/tty 2>/dev/null
+        else
+            echo "$prompt_text" >&2
+            read input_value
+        end
+
+        printf '%s' "$input_value"
+    end
+
     switch $action
         case list
             set -l dir (cat $state/dir)
@@ -23,6 +40,7 @@ function __ffm_helper
             set -l dir (cat $state/dir)
             set -l name (string replace -ra '\x1b\[[0-9;]*m' '' -- $argv[2])
             set -l full_path "$dir/$name"
+
             if test -d "$full_path"
                 if command -v exa >/dev/null
                     exa --color=always --icons --group-directories-first "$full_path"
@@ -69,6 +87,7 @@ function __ffm_helper
             set -l dir (cat $state/dir)
             set -l name (string replace -ra '\x1b\[[0-9;]*m' '' -- $argv[2])
             set -l full_path "$dir/$name"
+
             if test -d "$full_path"
                 realpath "$full_path" > $state/dir
             else if test -f "$full_path"
@@ -91,18 +110,22 @@ function __ffm_helper
             set -l dir (cat $state/dir)
             set -l name (string replace -ra '\x1b\[[0-9;]*m' '' -- $argv[2])
             set -l old_path "$dir/$name"
+
             if test -e "$old_path"
-                read -P "Enter new name: " new_name
+                set -l new_name (__ffm_read_prompt "Enter new name: ")
                 if test -n "$new_name"
                     set -l new_path "$dir/$new_name"
                     if test -e "$new_path"
-                        echo "Error: '$new_name' already exists!"; read -P "Press enter..." x
+                        echo "Error: '$new_name' already exists!"
+                        __ffm_read_prompt "Press enter..." >/dev/null
                     else if not mv "$old_path" "$new_path"
-                        echo "Error: Failed to rename '$name'"; read -P "Press enter..." x
+                        echo "Error: Failed to rename '$name'"
+                        __ffm_read_prompt "Press enter..." >/dev/null
                     end
                 end
             else
-                echo "Error: File '$name' not found!"; read -P "Press enter..." x
+                echo "Error: File '$name' not found!"
+                __ffm_read_prompt "Press enter..." >/dev/null
             end
 
         case copy
@@ -128,16 +151,20 @@ function __ffm_helper
             set -l clip_path (cat $state/clip_path)
             set -l clip_op (cat $state/clip_op)
             set -l dir (cat $state/dir)
+
             if not test -e "$clip_path"
                 echo "Error: Source file no longer exists!"
                 : > $state/clip_path; : > $state/clip_op
-                read -P "Press enter..." x
+                __ffm_read_prompt "Press enter..." >/dev/null
                 return
             end
+
             set -l source_name (basename "$clip_path")
             set -l dest_path "$dir/$source_name"
+
             if test -e "$dest_path"
-                echo "Error: '$source_name' already exists here!"; read -P "Press enter..." x
+                echo "Error: '$source_name' already exists here!"
+                __ffm_read_prompt "Press enter..." >/dev/null
             else if test "$clip_op" = copy
                 if test -d "$clip_path"
                     cp -r "$clip_path" "$dest_path"; or echo "Error copying directory"
@@ -148,7 +175,8 @@ function __ffm_helper
                 if mv "$clip_path" "$dest_path"
                     : > $state/clip_path; : > $state/clip_op
                 else
-                    echo "Error: Failed to move '$source_name'"; read -P "Press enter..." x
+                    echo "Error: Failed to move '$source_name'"
+                    __ffm_read_prompt "Press enter..." >/dev/null
                 end
             end
 
@@ -156,16 +184,19 @@ function __ffm_helper
             set -l dir (cat $state/dir)
             set -l name (string replace -ra '\x1b\[[0-9;]*m' '' -- $argv[2])
             set -l full_path "$dir/$name"
+
             if not test -e "$full_path"
-                echo "Error: File '$name' not found!"; read -P "Press enter..." x
+                echo "Error: File '$name' not found!"
+                __ffm_read_prompt "Press enter..." >/dev/null
             else
-                read -P "Delete '$name'? [y/N] " confirm
-                switch $confirm
+                set -l confirm (__ffm_read_prompt "Delete '$name'? [y/N] ")
+                switch "$confirm"
                     case y Y
                         if rm -rf "$full_path"
                             echo "'$name' deleted."
                         else
-                            echo "Error: Failed to delete '$name'"; read -P "Press enter..." x
+                            echo "Error: Failed to delete '$name'"
+                            __ffm_read_prompt "Press enter..." >/dev/null
                         end
                     case '*'
                         echo "Cancelled."
